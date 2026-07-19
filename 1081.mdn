@@ -1,0 +1,69 @@
+# 🚀 LeetCode 1081 / 316 — Smallest Subsequence of Distinct Characters
+
+### 📝 Problem Description
+Given a string `s`, return the lexicographically smallest subsequence of `s` that contains all the distinct characters of `s` exactly once.
+
+---
+
+### 💻 Java Solution
+
+```java
+import java.util.Stack;
+
+/**
+ * Problem: Smallest Subsequence of Distinct Characters (LeetCode 1081 / 316)
+ * Language: Java 17
+ */
+class Solution {
+    public String smallestSubsequence(String s) {
+        // Step 1: Count the total occurrences of each character
+        int[] count = new int[26];
+        for (int i = 0; i < s.length(); i++) {
+            count[s.charAt(i) - 'a']++;
+        }
+        
+        // Step 2: Track if a character is already included in our result stack
+        boolean[] inStack = new boolean[26];
+        Stack<Character> stack = new Stack<>();
+        
+        // Step 3: Iterate through the string to build the subsequence
+        for (int i = 0; i < s.length(); i++) {
+            char c = s.charAt(i);
+            
+            // Decrement the remaining count for the current character
+            count[c - 'a']--;
+            
+            // If the character is already in our answer, skip it
+            if (inStack[c - 'a']) {
+                continue;
+            }
+            
+            // Pop characters from the stack if:
+            // 1. The stack is not empty
+            // 2. The top of the stack is lexicographically greater than the current char 'c'
+            // 3. The top character appears again later in the string (count > 0)
+            while (!stack.isEmpty() && stack.peek() > c && count[stack.peek() - 'a'] > 0) {
+                char removed = stack.pop();
+                inStack[removed - 'a'] = false; // Mark it as no longer in the stack
+            }
+            
+            // Push the current character and mark it as visited
+            stack.push(c);
+            inStack[c - 'a'] = true;
+        }
+        
+        // Step 4: Build the final string from the stack
+        StringBuilder sb = new StringBuilder();
+        for (char c : stack) {
+            sb.append(c);
+        }
+        
+        return sb.toString();
+    }
+}
+```
+### 📊 Complexity Analysis
+
+| Complexity | Time | Space | Reason |
+| :--- | :--- | :--- | :--- |
+| **Worst Case** | $O(N)$ | $O(1)$ | Each character is pushed and popped from the stack at most once. The auxiliary space is constant because the stack and frequency arrays hold a maximum of 26 unique English lowercase letters. |
